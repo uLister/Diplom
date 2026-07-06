@@ -6,12 +6,12 @@ namespace Enemy
     {
         public void BlindPlayer()
         {
-            Debug.Log("Разведчик применил световую вспышку и ослепил игрока!");
+            Debug.Log("Ослепление");
         }
 
         public void EmitRadarScan()
         {
-            Debug.Log("Разведчик просканировал местность и передал данные!");
+            Debug.Log("Назначить точку атаки для снайпера");
         }
     }
 }
