@@ -10,23 +10,23 @@ namespace Enemy
 
         public void FireLaser(Vector3 targetPosition)
         {
-            Debug.Log("Выстрел");
+            Debug.Log("Выстрел снайпер");
         }
 
         public void PerformDash(Vector3 dodgeDirection)
         {
-            Debug.Log("Уворот");
+            Debug.Log("Уворот снайпер");
         }
 
         public void RequestCover()
         {
-            Debug.Log("Запрос прикрытия");
+            Debug.Log("Запрос прикрытия снайпер");
             OnCoverRequested?.Invoke(this);
         }
 
         public void RequestRepair()
         {
-            Debug.Log("Запроса ремонта");
+            Debug.Log("Запроса ремонта снайпер");
             OnRepairRequested?.Invoke(this);
         }
     }

@@ -15,7 +15,7 @@ namespace Enemy
 
         public void RequestCover()
         {
-            Debug.Log("Запроса прикрытия");
+            Debug.Log("Запроса прикрытия ремонтник");
             OnCoverRequested?.Invoke(this);
         }
     }
