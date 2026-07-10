@@ -3,39 +3,49 @@ using UnityEngine;
 
 namespace Enemy
 {
+    public struct EnemyNeeds
+    {
+        public const int Cover = 0;  
+        public const int Repair = 1; 
+    }
+
     public abstract class BaseEnemy : MonoBehaviour
     {
-        [SerializeField] private float _moveSpeed = 3.5f;
-        [SerializeField] private int _maxHealth = 100;
+        public event Action<int, int> OnEnemyNeeds;
 
-        private int _currentHealth;
+        [Header("Базовые характеристики (BaseEnemy)")]
+        [SerializeField] protected float _maxHealth = 100f;
+        protected float _currentHealth;
 
-        public event Action OnDeath;
+        protected int _enemyInstanceId;
 
-        protected virtual void Start()
+        protected virtual void Awake()
         {
+            _enemyInstanceId = gameObject.GetInstanceID();
+            
             _currentHealth = _maxHealth;
         }
 
-        public void MoveTowards(Vector3 destination)
+        public virtual void MoveToPoint(Vector3 targetPoint)
         {
-            Vector3 direction = (destination - transform.position).normalized;
-            transform.position += direction * _moveSpeed * Time.deltaTime;
+            
         }
 
-        public virtual void TakeDamage(int damage)
+        public virtual void ReceiveHealing(float amount)
         {
-            _currentHealth -= damage;
-            if (_currentHealth <= 0)
-            {
-                Die();
-            }
+            _currentHealth += amount;
+            
+            _currentHealth = Mathf.Min(_currentHealth, _maxHealth);
         }
 
-        protected virtual void Die()
+        protected void RequestCover()
         {
-            OnDeath?.Invoke();
-            Destroy(gameObject);
+            OnEnemyNeeds?.Invoke(EnemyNeeds.Cover, _enemyInstanceId);
+        }
+
+        protected void RequestRepair()
+        {
+            OnEnemyNeeds?.Invoke(EnemyNeeds.Repair, _enemyInstanceId);
         }
     }
 }

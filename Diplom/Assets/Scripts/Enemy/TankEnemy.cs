@@ -1,31 +1,29 @@
-using System;
 using UnityEngine;
 
 namespace Enemy
 {
-    public class TankEnemy : BaseEnemy
+    public class Tank : BaseEnemy
     {
-        public event Action<BaseEnemy> OnRepairRequested;
-
-        public void ShootAt(Vector3 targetPosition)
+        protected override void Awake()
         {
-            Debug.Log("Выстрел танк");
+            _maxHealth = 500f; 
+            
+            base.Awake(); 
         }
 
-        public void ActivateShield()
+        public override void MoveToPoint(Vector3 targetPoint)
         {
-            Debug.Log("Щит танк");
+            base.MoveToPoint(targetPoint);
         }
 
-        public void PerformDash(Vector3 dashTarget)
+        public override void TakeDamage(float damage)
         {
-            Debug.Log("Рывок танк");
-        }
+            base.TakeDamage(damage);
 
-        public void RequestRepair()
-        {
-            Debug.Log("Запроса ремонта танк");
-            OnRepairRequested?.Invoke(this);
+            if (_currentHealth > 0 && _currentHealth < 100f)
+            {
+                RequestRepair();
+            }
         }
     }
 }

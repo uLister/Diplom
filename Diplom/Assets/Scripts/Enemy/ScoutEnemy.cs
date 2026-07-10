@@ -2,16 +2,36 @@ using UnityEngine;
 
 namespace Enemy
 {
-    public class ScoutEnemy : BaseEnemy
+    public class Scout : BaseEnemy
     {
-        public void BlindPlayer()
+        [Header("Настройки побега")]
+        [SerializeField] private float _fleeDistance = 15f;
+
+        public override void MoveToPoint(Vector3 targetPoint)
         {
-            Debug.Log("Ослепление");
+            base.MoveToPoint(targetPoint);
         }
 
-        public void EmitRadarScan()
+        public void OnSpottedByPlayer(Transform playerTransform)
         {
-            Debug.Log("Назначить точку атаки для снайпера");
+            BlindPlayer();
+            FleeFromPlayer(playerTransform);
+        }
+
+        private void BlindPlayer()
+        {
+            Debug.Log($"Скаут {gameObject.name} Ослепление");
+        }
+
+        private void FleeFromPlayer(Transform playerTransform)
+        {
+            Vector3 directionAwayFromPlayer = (transform.position - playerTransform.position);
+            
+            Vector3 normalizedDirection = directionAwayFromPlayer.normalized;
+
+            Vector3 targetFleePoint = transform.position + (normalizedDirection * _fleeDistance);
+
+            MoveToPoint(targetFleePoint);
         }
     }
 }

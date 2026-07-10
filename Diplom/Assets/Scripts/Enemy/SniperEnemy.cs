@@ -1,33 +1,24 @@
-using System;
 using UnityEngine;
 
 namespace Enemy
 {
-    public class SniperEnemy : BaseEnemy
+    public class Sniper : BaseEnemy
     {
-        public event Action<BaseEnemy> OnCoverRequested;
-        public event Action<BaseEnemy> OnRepairRequested;
+        private float _health = 100f;
 
-        public void FireLaser(Vector3 targetPosition)
+        public override void MoveToPoint(Vector3 targetPoint)
         {
-            Debug.Log("Выстрел снайпер");
+            base.MoveToPoint(targetPoint);
         }
 
-        public void PerformDash(Vector3 dodgeDirection)
+        public void TakeDamage(float damage)
         {
-            Debug.Log("Уворот снайпер");
-        }
-
-        public void RequestCover()
-        {
-            Debug.Log("Запрос прикрытия снайпер");
-            OnCoverRequested?.Invoke(this);
-        }
-
-        public void RequestRepair()
-        {
-            Debug.Log("Запроса ремонта снайпер");
-            OnRepairRequested?.Invoke(this);
+            _health -= damage;
+            
+            if (_health < 30f)
+            {
+                RequestCover();
+            }
         }
     }
 }

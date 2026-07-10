@@ -38,8 +38,6 @@ public class PlayerInput : MonoBehaviour
     {
         Vector2 value = context.ReadValue<Vector2>();
     
-        Debug.Log($"[INPUT] Клавиатура работает! Нажат вектор: {value}");
-
         OnMoveInput?.Invoke(value);
     }
     private void OnMoveCanceled(InputAction.CallbackContext context) => OnMoveInput?.Invoke(Vector2.zero);
