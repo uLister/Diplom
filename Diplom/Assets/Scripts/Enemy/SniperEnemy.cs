@@ -4,18 +4,18 @@ namespace Enemy
 {
     public class Sniper : BaseEnemy
     {
-        private float _health = 100f;
+        //private float _health = 100f;
 
         public override void MoveToPoint(Vector3 targetPoint)
         {
             base.MoveToPoint(targetPoint);
         }
 
-        public void TakeDamage(float damage)
+        public override void TakeDamage(float damage)
         {
-            _health -= damage;
+            base.TakeDamage(damage);
             
-            if (_health < 30f)
+            if (_currentHealth > 0 && _currentHealth < 30f)
             {
                 RequestCover();
             }

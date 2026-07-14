@@ -11,30 +11,44 @@ namespace Enemy
 
     public abstract class BaseEnemy : MonoBehaviour
     {
-        public event Action<int, int> OnEnemyNeeds;
+        public event Action<int, EntityId> OnEnemyNeeds;
 
         [Header("Базовые характеристики (BaseEnemy)")]
         [SerializeField] protected float _maxHealth = 100f;
         protected float _currentHealth;
 
-        protected int _enemyInstanceId;
+        protected EntityId _enemyInstanceId;
 
         protected virtual void Awake()
         {
-            _enemyInstanceId = gameObject.GetInstanceID();
-            
+            _enemyInstanceId = gameObject.GetEntityId(); 
             _currentHealth = _maxHealth;
         }
 
         public virtual void MoveToPoint(Vector3 targetPoint)
         {
+            // движение
+        }
+
+        public virtual void TakeDamage(float damage)
+        {
+            _currentHealth -= damage;
             
+            if (_currentHealth <= 0)
+            {
+                _currentHealth = 0;
+                Die();
+            }
+        }
+
+        protected virtual void Die()
+        {
+            Destroy(gameObject);
         }
 
         public virtual void ReceiveHealing(float amount)
         {
             _currentHealth += amount;
-            
             _currentHealth = Mathf.Min(_currentHealth, _maxHealth);
         }
 
