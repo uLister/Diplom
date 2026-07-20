@@ -1,25 +1,28 @@
 using UnityEngine;
 
-public class CombatState : BaseState
+namespace Enemy
 {
-    private EnemyAI enemy;
-
-    public CombatState(EnemyAI enemyAI)
+    public class CombatState : BaseState
     {
-        this.enemy = enemyAI;
-    }
+        private EnemyAI enemy;
 
-    public override void Enter()
-    {
-        Debug.Log("Вошел в состояние: Бой");
-    }
+        public CombatState(EnemyAI enemyAI)
+        {
+            this.enemy = enemyAI;
+        }
 
-    public override void Update()
-    {
-    }
+        public override void Enter()
+        {
+            Debug.Log("Вошел в состояние: Бой");
+        }
 
-    public override void Exit()
-    {
-        Debug.Log("Вышел из состояния: Бой");
+        public override void Update()
+        {
+        }
+
+        public override void Exit()
+        {
+            Debug.Log("Вышел из состояния: Бой");
+        }
     }
 }

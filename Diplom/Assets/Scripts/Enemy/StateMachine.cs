@@ -1,29 +1,42 @@
-public class StateMachine
+using System.Collections.Generic;
+
+namespace Enemy
 {
-    public BaseState CurrentState { get; private set; }
-
-    public void Initialize(BaseState startingState)
+    public class StateMachine
     {
-        CurrentState = startingState;
-        CurrentState.Enter();
-    }
+        public BaseState CurrentState { get; private set; }
 
-    public void ChangeState(BaseState newState)
-    {
-        if (CurrentState != null)
+        private Dictionary<(BaseState, EnemySignal), BaseState> transitions = new Dictionary<(BaseState, EnemySignal), BaseState>();
+
+        public void Initialize(BaseState startingState)
         {
-            CurrentState.Exit(); 
+            CurrentState = startingState;
+            CurrentState.Enter();
         }
 
-        CurrentState = newState;
-        CurrentState.Enter(); 
-    }
-
-    public void Update()
-    {
-        if (CurrentState != null)
+        public void AddTransition(BaseState fromState, EnemySignal signal, BaseState toState)
         {
-            CurrentState.Update();
+            transitions.Add((fromState, signal), toState);
+        }
+
+        public void SendSignal(EnemySignal signal)
+        {
+            if (transitions.TryGetValue((CurrentState, signal), out BaseState nextState))
+            {
+                ChangeState(nextState);
+            }
+        }
+
+        private void ChangeState(BaseState newState)
+        {
+            CurrentState?.Exit();
+            CurrentState = newState;
+            CurrentState.Enter();
+        }
+
+        public void Update()
+        {
+            CurrentState?.Update();
         }
     }
 }

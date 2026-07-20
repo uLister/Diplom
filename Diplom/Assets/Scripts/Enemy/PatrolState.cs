@@ -1,36 +1,39 @@
 using UnityEngine;
 
-public class PatrolState : BaseState
+namespace Enemy
 {
-    private EnemyAI enemy;
-
-    public PatrolState(EnemyAI enemyAI)
+    public class PatrolState : BaseState
     {
-        this.enemy = enemyAI;
-    }
+        private EnemyAI enemy;
 
-    public override void Enter()
-    {
-        Debug.Log("патруль");
-    }
-
-    public override void Update()
-    {
-        bool playerDetected = CheckIfPlayerDetected();
-        
-        if (playerDetected)
+        public PatrolState(EnemyAI enemyAI)
         {
-            enemy.SwitchState(enemy.combatState);
+            this.enemy = enemyAI;
         }
-    }
 
-    public override void Exit()
-    {
-        Debug.Log("выход из патруля");
-    }
+        public override void Enter()
+        {
+            Debug.Log("патруль");
+        }
 
-    private bool CheckIfPlayerDetected()
-    {
-        return Input.GetKeyDown(KeyCode.Space);
+        public override void Update()
+        {
+            bool playerDetected = CheckIfPlayerDetected();
+
+            if (playerDetected)
+            {
+                enemy.SwitchState(enemy.combatState);
+            }
+        }
+
+        public override void Exit()
+        {
+            Debug.Log("выход из патруля");
+        }
+
+        private bool CheckIfPlayerDetected()
+        {
+            return Input.GetKeyDown(KeyCode.Space);
+        }
     }
 }

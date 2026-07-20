@@ -1,29 +1,32 @@
 using UnityEngine;
 
-public class EnemyAI : MonoBehaviour
+namespace Enemy
 {
-    private StateMachine stateMachine;
-
-    public PatrolState patrolState;
-    public CombatState combatState;
-
-    void Start()
+    public class EnemyAI : MonoBehaviour
     {
-        stateMachine = new StateMachine();
+        private StateMachine stateMachine;
 
-        patrolState = new PatrolState(this);
-        combatState = new CombatState(this);
+        public PatrolState patrolState;
+        public CombatState combatState;
 
-        stateMachine.Initialize(patrolState);
-    }
+        void Start()
+        {
+            stateMachine = new StateMachine();
 
-    void Update()
-    {
-        stateMachine.Update();
-    }
+            patrolState = new PatrolState(this);
+            combatState = new CombatState(this);
 
-    public void SwitchState(BaseState newState)
-    {
-        stateMachine.ChangeState(newState);
+            stateMachine.Initialize(patrolState);
+        }
+
+        void Update()
+        {
+            stateMachine.Update();
+        }
+
+        public void SwitchState(BaseState newState)
+        {
+            //stateMachine.ChangeState(newState);
+        }
     }
 }
