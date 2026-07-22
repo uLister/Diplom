@@ -1,3 +1,5 @@
+// StateMachine.cs
+using System;
 using System.Collections.Generic;
 
 namespace Enemy
@@ -5,8 +7,17 @@ namespace Enemy
     public class StateMachine
     {
         public BaseState CurrentState { get; private set; }
+        
+        private SignalBus signalBus;
+        
+        private HashSet<Type> subscribedSignals = new HashSet<Type>();
 
-        private Dictionary<(BaseState, EnemySignal), BaseState> transitions = new Dictionary<(BaseState, EnemySignal), BaseState>();
+        private Dictionary<(BaseState, Type), BaseState> transitions = new Dictionary<(BaseState, Type), BaseState>();
+
+        public StateMachine(SignalBus bus)
+        {
+            signalBus = bus;
+        }
 
         public void Initialize(BaseState startingState)
         {
@@ -14,14 +25,23 @@ namespace Enemy
             CurrentState.Enter();
         }
 
-        public void AddTransition(BaseState fromState, EnemySignal signal, BaseState toState)
+        public void AddTransition<TSignal>(BaseState fromState, BaseState toState)
         {
-            transitions.Add((fromState, signal), toState);
+            Type signalType = typeof(TSignal);
+            transitions.Add((fromState, signalType), toState);
+
+            if (!subscribedSignals.Contains(signalType))
+            {
+                signalBus.Subscribe<TSignal>(OnSignalReceived);
+                subscribedSignals.Add(signalType);
+            }
         }
 
-        public void SendSignal(EnemySignal signal)
+        private void OnSignalReceived<TSignal>(TSignal signal)
         {
-            if (transitions.TryGetValue((CurrentState, signal), out BaseState nextState))
+            Type signalType = typeof(TSignal);
+
+            if (transitions.TryGetValue((CurrentState, signalType), out BaseState nextState))
             {
                 ChangeState(nextState);
             }
@@ -34,9 +54,9 @@ namespace Enemy
             CurrentState.Enter();
         }
 
-        public void Update()
+        public void Tick()
         {
-            CurrentState?.Update();
+            CurrentState?.LogicUpdate();
         }
     }
 }

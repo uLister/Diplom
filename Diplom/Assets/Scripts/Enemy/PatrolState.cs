@@ -16,7 +16,7 @@ namespace Enemy
             Debug.Log("патруль");
         }
 
-        public override void Update()
+        public override void LogicUpdate()
         {
             bool playerDetected = CheckIfPlayerDetected();
 

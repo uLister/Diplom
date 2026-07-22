@@ -16,7 +16,7 @@ namespace Enemy
             Debug.Log("Вошел в состояние: Бой");
         }
 
-        public override void Update()
+        public override void LogicUpdate()
         {
         }
 

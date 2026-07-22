@@ -1,9 +1,11 @@
+// ScoutAI.cs
 using UnityEngine;
 
 namespace Enemy
 {
     public class ScoutAI : MonoBehaviour
     {
+        private SignalBus signalBus;
         private StateMachine stateMachine;
 
         private MovementState movementState;
@@ -11,32 +13,34 @@ namespace Enemy
 
         void Start()
         {
-            stateMachine = new StateMachine();
+            signalBus = new SignalBus();
+
+            stateMachine = new StateMachine(signalBus);
+            
             movementState = new MovementState();
             blindState = new ScoutBlindState();
 
-            // Настройка правил перехода
-            stateMachine.AddTransition(movementState, EnemySignal.PlayerSpotted, blindState);
-            stateMachine.AddTransition(blindState, EnemySignal.PlayerLost, movementState);
+            stateMachine.AddTransition<PlayerSpottedSignal>(movementState, blindState);
+            stateMachine.AddTransition<PlayerLostSignal>(blindState, movementState);
 
             stateMachine.Initialize(movementState);
         }
 
         void Update()
         {
-            stateMachine.Update();
-            CheckVision();
+            stateMachine.Tick(); //  LogicUpdate текущего состояния
+            CheckVision();       // зрение
         }
 
         private void CheckVision()
         {
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                stateMachine.SendSignal(EnemySignal.PlayerSpotted);
+                signalBus.Fire(new PlayerSpottedSignal());
             }
             else if (Input.GetKeyDown(KeyCode.LeftShift))
             {
-                stateMachine.SendSignal(EnemySignal.PlayerLost);
+                signalBus.Fire(new PlayerLostSignal());
             }
         }
     }
