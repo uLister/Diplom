@@ -1,62 +1,52 @@
 // StateMachine.cs
 using System;
-using System.Collections.Generic;
+using Zenject;
 
 namespace Enemy
 {
-    public class StateMachine
+    public class StateMachine : IInitializable, ITickable, IDisposable
     {
-        public BaseState CurrentState { get; private set; }
-        
-        private SignalBus signalBus;
-        
-        private HashSet<Type> subscribedSignals = new HashSet<Type>();
+        private readonly SignalBus _signalBus;
+        private readonly MovementState _movementState;
+        private readonly ScoutBlindState _blindState;
 
-        private Dictionary<(BaseState, Type), BaseState> transitions = new Dictionary<(BaseState, Type), BaseState>();
+        private BaseState _currentState;
 
-        public StateMachine(SignalBus bus)
+        public StateMachine(SignalBus signalBus, MovementState movement, ScoutBlindState blind)
         {
-            signalBus = bus;
+            _signalBus = signalBus;
+            _movementState = movement;
+            _blindState = blind;
         }
 
-        public void Initialize(BaseState startingState)
+        public void Initialize()
         {
-            CurrentState = startingState;
-            CurrentState.Enter();
-        }
+            _signalBus.Subscribe<PlayerSpottedSignal>(OnPlayerSpotted);
+            _signalBus.Subscribe<PlayerLostSignal>(OnPlayerLost);
 
-        public void AddTransition<TSignal>(BaseState fromState, BaseState toState)
-        {
-            Type signalType = typeof(TSignal);
-            transitions.Add((fromState, signalType), toState);
-
-            if (!subscribedSignals.Contains(signalType))
-            {
-                signalBus.Subscribe<TSignal>(OnSignalReceived);
-                subscribedSignals.Add(signalType);
-            }
-        }
-
-        private void OnSignalReceived<TSignal>(TSignal signal)
-        {
-            Type signalType = typeof(TSignal);
-
-            if (transitions.TryGetValue((CurrentState, signalType), out BaseState nextState))
-            {
-                ChangeState(nextState);
-            }
-        }
-
-        private void ChangeState(BaseState newState)
-        {
-            CurrentState?.Exit();
-            CurrentState = newState;
-            CurrentState.Enter();
+            ChangeState(_movementState);
         }
 
         public void Tick()
         {
-            CurrentState?.LogicUpdate();
+            _currentState?.LogicUpdate();
+        }
+
+        public void Dispose()
+        {
+            _signalBus.Unsubscribe<PlayerSpottedSignal>(OnPlayerSpotted);
+            _signalBus.Unsubscribe<PlayerLostSignal>(OnPlayerLost);
+        }
+
+        private void OnPlayerSpotted() => ChangeState(_blindState);
+        
+        private void OnPlayerLost() => ChangeState(_movementState);
+
+        private void ChangeState(BaseState newState)
+        {
+            _currentState?.Exit();
+            _currentState = newState;
+            _currentState?.Enter();
         }
     }
 }
